@@ -21,3 +21,8 @@ body {
   width: 100px;
   border: 2px white solid;
 }
+
+.main-container {
+  margin: 20px;
+  padding: 10px;
+}
