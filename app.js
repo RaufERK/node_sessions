@@ -32,11 +32,10 @@ app.use(
   })
 );
 
-// const db = [{ id: 1231, username: 'rauf', password: '123' }];
-
+// эта мидлвара записываем всегда информацию о пользователе во все хэбээски разом
 app.use((req, res, next) => {
   console.log('  req.session ==>', req.session);
-  //записываем всегда информацию о пользователе во все хэбээски разом
+
   res.locals.username = req.session.username;
   next();
 });
@@ -44,80 +43,86 @@ app.use((req, res, next) => {
 app
   .route('/login')
   .get((req, res) => {
+    //отрисовываем страница авторизации
     console.log('GET /LOGIN  ===========>>>>');
     res.render('login');
   })
   .post(async (req, res) => {
+    //принимаем данные фрмы авторизации
     console.log('POST /LOGIN  ===========>>>>');
     console.log('BODY >>>>', req.body);
     const { username, password } = req.body;
 
+    //ищем в базе именно пользователя у которого и логин и пароль одновременно такие какие ввёл пользователь
     const searchResult = await User.findOne({
       username,
       password: sha256(password),
     });
 
     console.log(' serachResult =>>>>>', searchResult);
+
     if (searchResult) {
+      //если пользователь есть то записываем его имя в сессию
       req.session.username = username;
       return res.render('index', { username });
     }
     res.redirect('/login');
   });
 
+// мидлвара для защиты роутов от неавторизованных пользователей
 function protect(req, res, next) {
   if (!req.session.username) res.redirect('/login');
   next();
 }
 
+//секретный роут который надо защитить
 app.get('/profile', protect, (req, res) => {
   res.render('profile');
 });
 
-app.get('/', protect, (req, res) => {
-  // console.log('HOME  ===========>>>>');
-  // console.log('   req.session.views  ==>', req.session.views);
+app.get('/logout', (req, res) => {
+  //session destroy
+  req.session.destroy();
+  res.redirect('/login');
+});
 
+app
+  .route('/registration')
+  .get((req, res) => {
+    res.render('registration');
+  })
+  .post(async (req, res) => {
+    console.log('   registration  ==>>', req.body);
+    const { username, password } = req.body;
+    try {
+      //создаём пользователя
+      const newUser = await User.create({
+        username,
+        password: sha256(password),
+      });
+
+      console.log('   newUser  ===>>', newUser);
+
+      //сразу записываем пользователя в сессию
+      req.session.username = req.body.username;
+      res.redirect('/');
+    } catch (err) {
+      console.log('-----ERRORR------');
+      console.log(err);
+      res.redirect('/registration');
+    }
+  });
+
+app.get('/', protect, (req, res) => {
   if (req.session.views) {
     req.session.views++;
   } else {
     req.session.views = 1;
   }
-
-  app.get('/logout', (req, res) => {
-    //session destroy
-    req.session.destroy();
-    res.redirect('/login');
-  });
-
-  app
-    .route('/registration')
-    .get((req, res) => {
-      res.render('registration');
-    })
-    .post(async (req, res) => {
-      console.log('   registration  ==>>', req.body);
-      const { username, password } = req.body;
-      try {
-        const newUser = await User.create({
-          username,
-          password: sha256(password),
-        });
-        console.log('   newUser  ===>>', newUser);
-        req.session.username = req.body.username;
-        res.redirect('/');
-      } catch (err) {
-        console.log('-----ERRORR------');
-        console.log(err);
-        res.redirect('/registration');
-      }
-    });
-
   res.locals.counter = req.session.views;
   res.render('index', { data: 'data' });
 });
+
 app.listen(PORT || 3000, () => {
   console.log('APP STARTED!!!');
 });
-
-// s%3AMNXR8gPLI9v-31oLZ2uWnoIJot7SxgKX.raB2u8VNfraCYl0x5nlu1d4rDg4fBzDU8wEKonah0Tc

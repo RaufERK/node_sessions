@@ -10,7 +10,6 @@
 </head>
 
 <body>
-  user: {{username}}
   <nav class="main-nav">
     <div><a href="/">HOME</a></div>
     <div><a href="/login">LOGIN</a></div>
@@ -21,6 +20,9 @@
     <div><a href="/profile">PROFILE</a></div>
     {{/if}}
   </nav>
+  <div class='userfield'>
+    user: {{username}}
+  </div>
 
   {{{body}}}
 </body>

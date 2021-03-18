@@ -10,4 +10,14 @@
 
 body {
   background-color: deepskyblue;
+  margin: 0;
+}
+
+.userfield {
+  margin: 20px;
+  padding: 10px;
+  background-color: rgb(181, 166, 248);
+  border-radius: 10px;
+  width: 100px;
+  border: 2px white solid;
 }
