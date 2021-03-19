@@ -2,7 +2,10 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const session = require('express-session');
-const sha256 = require('sha256');
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 // const mongoUrl = 'mongodb://localhost:27017/eagles2021';
@@ -73,19 +76,27 @@ app
     console.log('POST /LOGIN  ===========>>>>');
     console.log('BODY >>>>', req.body);
     const { username, password } = req.body;
-
     //ищем в базе именно пользователя у которого и логин и пароль одновременно такие какие ввёл пользователь
-    const searchResult = await User.findOne({
-      username,
-      password: sha256(password),
-    });
 
-    console.log(' serachResult =>>>>>', searchResult);
+    try {
+      const userFromBase = await User.findOne({ username });
+      const formPasswordHash = await bcrypt.hash(password, saltRounds);
+      console.log(' userFromBase =>>>>>', userFromBase);
+      console.log(' userFromBase.password =>>>>>', userFromBase.password);
+      const compareRes = await bcrypt.compare(
+        userFromBase.password,
+        formPasswordHash
+      );
+      console.log(' compareRes =>>>>>', compareRes);
 
-    if (searchResult) {
-      //если пользователь есть то записываем его имя в сессию
-      req.session.username = username;
-      return res.render('index', { username });
+      if (compareRes) {
+        //если пользователь есть то записываем его имя в сессию
+        req.session.username = username;
+        return res.render('index', { username });
+      }
+    } catch (err) {
+      console.log('========================');
+      console.log(err);
     }
     res.redirect('/login');
   });
@@ -119,7 +130,7 @@ app
       //создаём пользователя
       const newUser = await User.create({
         username,
-        password: sha256(password),
+        password: await bcrypt.hash(password, saltRounds),
       });
 
       console.log('   newUser  ===>>', newUser);
