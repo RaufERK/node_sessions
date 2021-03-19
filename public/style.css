@@ -16,10 +16,10 @@ body {
 .userfield {
   margin: 20px;
   padding: 10px;
-  background-color: rgb(181, 166, 248);
+  background-color: lightskyblue;
   border-radius: 10px;
-  width: 100px;
-  border: 2px white solid;
+  width: 150px;
+  /* border: 2px white solid; */
 }
 
 .main-container {
