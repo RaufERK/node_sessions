@@ -9,10 +9,9 @@ const MongoStore = require('connect-mongo');
 const { Item, User, dbOptions } = require('./db/mongo');
 const { mongoUrl, PORT, secret, salt } = process.env;
 const saltRounds = Number(salt);
-console.log('  saltRounds ===>', saltRounds);
 
 mongoose.connect(mongoUrl, dbOptions, () => {
-  console.log('DB COnnected!!!');
+  console.log('DB Connected!!!');
 });
 
 app.set('view engine', 'hbs');
@@ -88,7 +87,7 @@ app.get('/profile', protect, (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  //session destroy
+  //разрушаем сессию
   req.session.destroy();
   res.redirect('/login');
 });
