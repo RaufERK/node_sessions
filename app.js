@@ -1,21 +1,31 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const cors = require('cors');
 const session = require('express-session');
 const sha256 = require('sha256');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
-const mongoUrl = 'mongodb://localhost:27017/eagles2021';
+// const mongoUrl = 'mongodb://localhost:27017/eagles2021';
 const dbOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
+require('dotenv').config();
+
+console.log('------------------');
+const { PWD, mongoUrl, PORT, secret } = process.env;
+console.log(PWD);
+console.log(PORT);
+console.log(secret);
+
+// const PORT = 3000;
 
 mongoose.connect(mongoUrl, dbOptions, () => {
   console.log('DB COnnected!!!');
 });
 
 const User = mongoose.model('User', { username: String, password: String });
+const Item = mongoose.model('Item', { name: String });
 
 app.set('view engine', 'hbs');
 app.use(express.static('public'));
@@ -24,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: 'keyboard cat',
+    secret,
     resave: true,
     saveUninitialized: false,
     cookie: { secure: false, maxAge: 60000 },
@@ -34,11 +44,22 @@ app.use(
 
 // эта мидлвара записываем всегда информацию о пользователе во все хэбээски разом
 app.use((req, res, next) => {
-  console.log('  req.session ==>', req.session);
+  // console.log('  req.session ==>', req.session);
 
   res.locals.username = req.session.username;
   next();
 });
+
+// const allowCORS = (req, res, next) => {
+//   const origin = req.header('origin');
+//   console.log('  origin ===>', origin);
+//   if (origin === 'http://127.0.0.1:55001') {
+//     res.header('Access-Control-Allow-Origin', '*');
+//   }
+//   next();
+// };
+
+app.use(cors());
 
 app
   .route('/login')
@@ -71,7 +92,7 @@ app
 
 // мидлвара для защиты роутов от неавторизованных пользователей
 function protect(req, res, next) {
-  if (!req.session.username) res.redirect('/login');
+  if (!req.session.username) return res.redirect('/login');
   next();
 }
 
@@ -113,14 +134,37 @@ app
     }
   });
 
-app.get('/', protect, (req, res) => {
-  if (req.session.views) {
-    req.session.views++;
-  } else {
-    req.session.views = 1;
-  }
-  res.locals.counter = req.session.views;
-  res.render('index', { data: 'data' });
+app
+  .route('/')
+  .get(async (req, res) => {
+    if (req.session.views) {
+      req.session.views++;
+    } else {
+      req.session.views = 1;
+    }
+    res.locals.counter = req.session.views;
+    const items = await Item.find();
+    res.render('index', { items });
+  })
+  .post(async (req, res) => {
+    console.log('   POST ==> /   body =>', req.body);
+    await Item.create(req.body);
+    res.redirect('/');
+  });
+
+app.get('/api', async (req, res) => {
+  const items = await Item.find();
+  res.send({ items });
+});
+
+app.get('/api1', async (req, res) => {
+  const items = await Item.find();
+  res.send({ items });
+});
+
+app.get('/api100', async (req, res) => {
+  const items = await Item.find();
+  res.send({ items });
 });
 
 app.listen(PORT || 3000, () => {

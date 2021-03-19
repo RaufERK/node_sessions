@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REMOTE CLIENT</title>
+    <script defer>
+      const callElbrusApi = async (param) => {
+        console.log('Heloo!!!');
+        const response = await fetch(`http://localhost:3000/api${param}`);
+        console.log('  response.status  ===', response.status);
+        console.log('  response.ok  ===', response.ok);
+        const finalResult = await response.json();
+        console.log(finalResult);
+      };
+      callElbrusApi('');
+      callElbrusApi(1);
+      callElbrusApi(100);
+    </script>
+  </head>
+  <body>
+    <div>REMOTE CLIENT</div>
+    <ul id="list"></ul>
+  </body>
+</html>
