@@ -1,11 +1,21 @@
 .main-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   background-color: fuchsia;
   margin: 0 0 20px 0;
   padding: 20px;
-  font-size: large;
+  font-size: xx-large;
   font-weight: 900;
+  color: rgb(99, 14, 99);
+}
+
+/* a:link {
+  text-decoration: none;
+} */
+
+a {
+  color: rgb(99, 14, 99);
+  text-decoration: none;
 }
 
 body {
@@ -19,6 +29,7 @@ body {
   background-color: lightskyblue;
   border-radius: 10px;
   width: 150px;
+  font-size: larger;
   /* border: 2px white solid; */
 }
 
