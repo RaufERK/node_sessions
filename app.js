@@ -3,11 +3,12 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const { Item, User, dbOptions } = require('./db/mongo');
 const { mongoUrl, PORT, secret, salt } = process.env;
+
+const bcrypt = require('bcrypt');
 const saltRounds = Number(salt);
 
 mongoose.connect(mongoUrl, dbOptions, () => {
@@ -60,11 +61,12 @@ app
     res.render('login');
   })
   .post(async (req, res) => {
-    //принимаем данные фрмы авторизации
+    //принимаем данные формы авторизации
     const { username, password } = req.body;
     try {
       //ищем в базе именно пользователя у которого и логин и пароль одновременно такие какие ввёл пользователь
       const userFromBase = await User.findOne({ username });
+      
       if (!userFromBase) return res.redirect('/login');
       //проверяем совпадение пароей
       const compareRes = await bcrypt.compare(password, userFromBase.password);
