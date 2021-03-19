@@ -16,6 +16,7 @@ mongoose.connect(mongoUrl, dbOptions, () => {
 });
 
 const User = mongoose.model('User', { username: String, password: String });
+items = ['text', 'text2', 'text3'];
 
 app.set('view engine', 'hbs');
 app.use(express.static('public'));
@@ -34,7 +35,7 @@ app.use(
 
 // эта мидлвара записываем всегда информацию о пользователе во все хэбээски разом
 app.use((req, res, next) => {
-  console.log('  req.session ==>', req.session);
+  // console.log('  req.session ==>', req.session);
 
   res.locals.username = req.session.username;
   next();
@@ -113,14 +114,26 @@ app
     }
   });
 
-app.get('/', protect, (req, res) => {
-  if (req.session.views) {
-    req.session.views++;
-  } else {
-    req.session.views = 1;
-  }
-  res.locals.counter = req.session.views;
-  res.render('index', { data: 'data' });
+app
+  .route('/')
+  .get((req, res) => {
+    if (req.session.views) {
+      req.session.views++;
+    } else {
+      req.session.views = 1;
+    }
+    res.locals.counter = req.session.views;
+    res.render('index', { items });
+  })
+  .post((req, res) => {
+    console.log(req.body);
+    items.push(req.body.item);
+    res.redirect('/');
+  });
+
+app.get('/api', (req, res) => {
+  res.header('Access-Control-Allow-Origin','*')
+  res.send({ items });
 });
 
 app.listen(PORT || 3000, () => {

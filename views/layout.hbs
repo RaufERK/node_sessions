@@ -7,25 +7,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ELBRUS AUTHORIATION</title>
   <link rel="stylesheet" href="style.css">
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
 </head>
 
 <body>
-  <nav class="main-nav">
-    <div><a href="/">HOME</a></div>
-    <div><a href="/login">LOGIN</a></div>
-    <div><a href="/registration">REGISTRATION</a></div>
-
-    {{#if username}}
-    <div><a href="/logout">LOGOUT</a></div>
-    <div><a href="/profile">PROFILE</a></div>
-    {{/if}}
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">ELBRUS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/registration">REGISTRATION</a>
+          </li>
+          {{#if username}}
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">logout</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="/profile">PROFILE</a>
+          </li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
   </nav>
+
   <div class='userfield'>
     user: {{username}}
   </div>
   <div class="main-container">
     {{{body}}}
   </div>
+
 </body>
 
 </html>

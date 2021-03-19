@@ -1,5 +1,13 @@
 <h1>counter : {{counter}}</h1>
 
-<div>
+<ul>
+  {{#each items}}
+  <li>{{this}}</li>
+  {{/each}}
+</ul>
 
-</div>
+
+<form action="/" class="for-form" method="post">
+  <input type="text" name="item" placeholder="itemname">
+  <button>ADD</button>
+</form>
